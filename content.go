@@ -183,10 +183,10 @@ func (s *ContentService) Manage(ctx context.Context, request ContentManageReques
 		return nil, err
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("content mutate failed: %s", string(body))
+		return nil, fmt.Errorf("content manage failed: %s", string(body))
 	}
 
-	var out ContentMutationResponse
+	var out ContentManageResponse
 	if err := json.Unmarshal(body, &out); err != nil {
 		return nil, err
 	}
