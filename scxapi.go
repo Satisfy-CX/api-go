@@ -23,7 +23,7 @@ func (s *SCXService) Health() *HealthService { return s.health }
 // Content returns the content sub-service.
 func (s *SCXService) Content() *ContentService { return s.content }
 
-const DefaultBasePath = "https://api.satisfycx.ai/api/v1"
+const DefaultBasePath = "https://api.satisfycx.ai/v1"
 
 // NewSCXService builds an SCXService.
 func NewSCXService(apiKey string, customBasePath string) *SCXService {
