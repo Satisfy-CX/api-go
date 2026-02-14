@@ -13,19 +13,13 @@ type HealthService struct {
 	base *SCXService
 }
 
-// HealthResponse is the response from a health check.
-type HealthResponse struct {
-	BaseResponse
-	Data HealthData `json:"health"`
-}
-
 type HealthData struct {
 	OrganizationName string `json:"organization_name"`
 	OrganizationID   string `json:"organization_id"`
 }
 
 // Check performs a health check.
-func (s *HealthService) Check() (*HealthResponse, error) {
+func (s *HealthService) Check() (*BaseResponse, error) {
 
 	url := fmt.Sprintf("%s/ping", s.base.BasePath)
 
@@ -55,9 +49,11 @@ func (s *HealthService) Check() (*HealthResponse, error) {
 
 	log.Printf("Health check response: %s", string(body))
 
-	var out HealthResponse
-	if err := json.Unmarshal(body, &out); err != nil {
+	var response BaseResponse
+	if err := json.Unmarshal(body, &response); err != nil {
 		return nil, err
 	}
-	return &out, nil
+
+	return &response, nil
+
 }
