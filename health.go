@@ -54,6 +54,8 @@ func (s *HealthService) Check() (*BaseResponse, error) {
 		return nil, err
 	}
 
+	log.Printf("Health check response: %+v", response)
+
 	return &response, nil
 
 }
