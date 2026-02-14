@@ -47,15 +47,20 @@ func (s *HealthService) Check() (*BaseResponse, error) {
 		return nil, fmt.Errorf("health check failed: %s", string(body))
 	}
 
-	log.Printf("Health check response: %s", string(body))
-
 	var response BaseResponse
 	if err := json.Unmarshal(body, &response); err != nil {
 		return nil, err
 	}
 
-	log.Printf("Health check response: %+v", response)
+	finalResponse := BaseResponse{
+		Status:  response.Status,
+		Message: response.Message,
+		Data: HealthData{
+			OrganizationName: response.Data.(HealthData).OrganizationName,
+			OrganizationID:   response.Data.(HealthData).OrganizationID,
+		},
+	}
 
-	return &response, nil
+	return &finalResponse, nil
 
 }
