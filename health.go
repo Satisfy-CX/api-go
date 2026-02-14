@@ -53,6 +53,8 @@ func (s *HealthService) Check() (*HealthResponse, error) {
 		return nil, fmt.Errorf("health check failed: %s", string(body))
 	}
 
+	log.Printf("Health check response: %s", string(body))
+
 	var out HealthResponse
 	if err := json.Unmarshal(body, &out); err != nil {
 		return nil, err
