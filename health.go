@@ -15,8 +15,13 @@ type HealthService struct {
 
 // HealthResponse is the response from a health check.
 type HealthResponse struct {
-	Status  string `json:"status"`
-	Message string `json:"message,omitempty"`
+	BaseResponse
+	Data HealthData `json:"data"`
+}
+
+type HealthData struct {
+	OrganizationName string `json:"organization_name"`
+	OrganizationID   string `json:"organization_id"`
 }
 
 // Check performs a health check.
