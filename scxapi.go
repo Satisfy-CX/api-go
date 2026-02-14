@@ -26,9 +26,15 @@ func (s *SCXService) Content() *ContentService { return s.content }
 const DefaultBasePath = "https://api.satisfycx.ai/api/v1"
 
 // NewSCXService builds an SCXService.
-func NewSCXService(apiKey string) *SCXService {
+func NewSCXService(apiKey string, customBasePath string) *SCXService {
+
+	basePath := DefaultBasePath
+	if customBasePath != "" {
+		basePath = customBasePath
+	}
+
 	svc := &SCXService{
-		BasePath: DefaultBasePath,
+		BasePath: basePath,
 		APIKey:   apiKey,
 		Client: &http.Client{
 			Timeout: 30 * time.Second,
