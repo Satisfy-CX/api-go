@@ -16,7 +16,7 @@ type HealthService struct {
 // HealthResponse is the response from a health check.
 type HealthResponse struct {
 	BaseResponse
-	Data HealthData `json:"data"`
+	Data HealthData `json:"health"`
 }
 
 type HealthData struct {

@@ -20,7 +20,6 @@ type SCXService struct {
 type BaseResponse struct {
 	Status  string `json:"api_status"`
 	Message string `json:"api_message"`
-	Data    any    `json:"data"`
 }
 
 // Health returns the health-check sub-service.
