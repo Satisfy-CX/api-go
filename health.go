@@ -52,15 +52,6 @@ func (s *HealthService) Check() (*BaseResponse, error) {
 		return nil, err
 	}
 
-	finalResponse := BaseResponse{
-		Status:  response.Status,
-		Message: response.Message,
-		Data: HealthData{
-			OrganizationName: response.Data.(HealthData).OrganizationName,
-			OrganizationID:   response.Data.(HealthData).OrganizationID,
-		},
-	}
-
-	return &finalResponse, nil
+	return &response, nil
 
 }
