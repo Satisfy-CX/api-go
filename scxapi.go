@@ -1,6 +1,7 @@
 package scxapi
 
 import (
+	"log"
 	"net/http"
 	"time"
 )
@@ -42,5 +43,8 @@ func NewSCXService(apiKey string, customBasePath string) *SCXService {
 	}
 	svc.health = &HealthService{base: svc}
 	svc.content = &ContentService{base: svc}
+
+	log.Printf("Created SCXService: %+v", svc)
+
 	return svc
 }
