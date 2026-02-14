@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 )
 
@@ -20,6 +21,8 @@ type HealthResponse struct {
 
 // Check performs a health check.
 func (s *HealthService) Check() (*HealthResponse, error) {
+	log.Printf("Checking health on %s", s.base.BasePath)
+
 	url := fmt.Sprintf("%s/ping", s.base.BasePath)
 
 	req, err := http.NewRequest(http.MethodPost, url, nil)
