@@ -44,30 +44,9 @@ type Content struct {
 	UpdatedAt       time.Time   `json:"updated_at,omitempty"`
 }
 
-type ContentListRequest struct {
-	Page     int `json:"page"`
-	PageSize int `json:"page_size"`
-}
-
-// type ContentListResponse struct {
-// 	ContentLibrary  `json:"content_library"`
-// }
-
-// List returns content for the organization (GET /content).
-func (s *ContentService) List(ctx context.Context, request ContentListRequest) (*BaseResponse, error) {
-	url := fmt.Sprintf("%s/content", s.base.BasePath)
-	if request.Page > 0 || request.PageSize > 0 {
-		url += "?"
-		if request.Page > 0 {
-			url += fmt.Sprintf("page=%d", request.Page)
-		}
-		if request.PageSize > 0 {
-			if request.Page > 0 {
-				url += "&"
-			}
-			url += fmt.Sprintf("page_size=%d", request.PageSize)
-		}
-	}
+// Library returns content for the organization (GET /content).
+func (s *ContentService) Library(ctx context.Context) (*BaseResponse, error) {
+	url := fmt.Sprintf("%s/content/library", s.base.BasePath)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
