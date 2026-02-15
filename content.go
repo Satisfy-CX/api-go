@@ -54,7 +54,7 @@ type ContentListRequest struct {
 // }
 
 // List returns content for the organization (GET /content).
-func (s *ContentService) List(ctx context.Context, request ContentListRequest) (*[]Content, error) {
+func (s *ContentService) List(ctx context.Context, request ContentListRequest) (*BaseResponse, error) {
 	url := fmt.Sprintf("%s/content", s.base.BasePath)
 	if request.Page > 0 || request.PageSize > 0 {
 		url += "?"
