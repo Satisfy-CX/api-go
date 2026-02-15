@@ -107,7 +107,7 @@ type ContentManageResponse struct {
 }
 
 // Get fetches a single content item by ID (GET /content/{id}).
-func (s *ContentService) Get(ctx context.Context, id string) (*Content, error) {
+func (s *ContentService) Get(ctx context.Context, id string) (*BaseResponse, error) {
 	url := fmt.Sprintf("%s/content/get/%s", s.base.BasePath, url.PathEscape(id))
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
@@ -136,11 +136,7 @@ func (s *ContentService) Get(ctx context.Context, id string) (*Content, error) {
 		return nil, err
 	}
 
-	if response.Status != StatusOK {
-		return nil, fmt.Errorf("content get failed: %s", response.Message)
-	}
-
-	return &(*response.ContentLibrary)[0], nil
+	return &response, nil
 
 }
 
