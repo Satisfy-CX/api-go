@@ -82,10 +82,10 @@ type ContentManageStatus int
 
 const (
 	_ ContentManageStatus = iota
-	StatusCreated
-	StatusUpdated
-	StatusDeleted
-	StatusError
+	ContentManageStatusCreated
+	ContentManageStatusUpdated
+	ContentManageStatusDeleted
+	ContentManageStatusError
 )
 
 type ContentManageRequest struct {
