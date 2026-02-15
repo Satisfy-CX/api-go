@@ -108,7 +108,7 @@ type ContentManageResponse struct {
 
 // Get fetches a single content item by ID (GET /content/{id}).
 func (s *ContentService) Get(ctx context.Context, id string) (*Content, error) {
-	url := fmt.Sprintf("%s/content/%s", s.base.BasePath, url.PathEscape(id))
+	url := fmt.Sprintf("%s/content/get/%s", s.base.BasePath, url.PathEscape(id))
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
@@ -131,11 +131,17 @@ func (s *ContentService) Get(ctx context.Context, id string) (*Content, error) {
 		return nil, fmt.Errorf("content get failed: %s", string(body))
 	}
 
-	var out Content
-	if err := json.Unmarshal(body, &out); err != nil {
+	var response BaseResponse
+	if err := json.Unmarshal(body, &response); err != nil {
 		return nil, err
 	}
-	return &out, nil
+
+	if response.Status != StatusOK {
+		return nil, fmt.Errorf("content get failed: %s", response.Message)
+	}
+
+	return &(*response.ContentLibrary)[0], nil
+
 }
 
 // Manage is used to manage the Content library. It creates or updates a content item.
