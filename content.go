@@ -29,19 +29,19 @@ const (
 )
 
 type Content struct {
-	ID              string      `json:"id"`
-	User            string      `json:"user"`
-	Name            string      `json:"name"`
-	Title           string      `json:"title"`
-	Body            string      `json:"body"`
-	SameAs          []string    `json:"same_as"`
-	DifferentFrom   []string    `json:"different_from"`
-	Context         string      `json:"context"`
-	Language        string      `json:"language"`
-	Type            ContentType `json:"type"`
-	ImportSourceURL string      `json:"import_source_url"`
-	CreatedAt       time.Time   `json:"created_at"`
-	UpdatedAt       time.Time   `json:"updated_at"`
+	ID              string      `json:"id,omitempty"`
+	User            string      `json:"user,omitempty"`
+	Name            string      `json:"name,omitempty"`
+	Title           string      `json:"title,omitempty"`
+	Body            string      `json:"body,omitempty"`
+	SameAs          []string    `json:"same_as,omitempty"`
+	DifferentFrom   []string    `json:"different_from,omitempty"`
+	Context         string      `json:"context,omitempty"`
+	Language        string      `json:"language,omitempty"`
+	Type            ContentType `json:"type,omitempty"`
+	ImportSourceURL string      `json:"import_source_url,omitempty"`
+	CreatedAt       time.Time   `json:"created_at,omitempty"`
+	UpdatedAt       time.Time   `json:"updated_at,omitempty"`
 }
 
 type ContentListRequest struct {
@@ -49,26 +49,27 @@ type ContentListRequest struct {
 	PageSize int `json:"page_size"`
 }
 
-type ContentListResponse struct {
-	ContentLibrary []Content `json:"library"`
-}
+// type ContentListResponse struct {
+// 	ContentLibrary  `json:"content_library"`
+// }
 
 // List returns content for the organization (GET /content).
-func (s *ContentService) List(ctx context.Context, request ContentListRequest) (*ContentListResponse, error) {
-	u, err := url.Parse(s.base.BasePath + "/content")
-	if err != nil {
-		return nil, err
+func (s *ContentService) List(ctx context.Context, request ContentListRequest) (*[]Content, error) {
+	url := fmt.Sprintf("%s/content", s.base.BasePath)
+	if request.Page > 0 || request.PageSize > 0 {
+		url += "?"
+		if request.Page > 0 {
+			url += fmt.Sprintf("page=%d", request.Page)
+		}
+		if request.PageSize > 0 {
+			if request.Page > 0 {
+				url += "&"
+			}
+			url += fmt.Sprintf("page_size=%d", request.PageSize)
+		}
 	}
-	q := u.Query()
-	if request.Page > 0 {
-		q.Set("page", fmt.Sprintf("%d", request.Page))
-	}
-	if request.PageSize > 0 {
-		q.Set("page_size", fmt.Sprintf("%d", request.PageSize))
-	}
-	u.RawQuery = q.Encode()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -85,15 +86,17 @@ func (s *ContentService) List(ctx context.Context, request ContentListRequest) (
 	if err != nil {
 		return nil, err
 	}
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("content list failed: %s", string(body))
 	}
 
-	var out ContentListResponse
-	if err := json.Unmarshal(body, &out); err != nil {
+	var response BaseResponse
+	if err := json.Unmarshal(body, &response); err != nil {
 		return nil, err
 	}
-	return &out, nil
+
+	return &response, nil
 }
 
 type ContentManageStatus int

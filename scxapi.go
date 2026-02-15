@@ -18,9 +18,10 @@ type SCXService struct {
 }
 
 type BaseResponse struct {
-	Status  string      `json:"api_status"`
-	Message string      `json:"api_message"`
-	Health  *HealthData `json:"health,omitempty"`
+	Status         string      `json:"api_status"`
+	Message        string      `json:"api_message"`
+	Health         *HealthData `json:"health,omitempty"`
+	ContentLibrary *[]Content  `json:"content_library,omitempty"`
 }
 
 // Health returns the health-check sub-service.
@@ -29,12 +30,12 @@ func (s *SCXService) Health() *HealthService { return s.health }
 // Content returns the content sub-service.
 func (s *SCXService) Content() *ContentService { return s.content }
 
-const DefaultBasePath = "https://api.satisfycx.ai/v1"
+const PublicAPIPath = "https://api.satisfycx.ai/v1"
 
 // NewSCXService builds an SCXService.
 func NewSCXService(apiKey string, customBasePath string) *SCXService {
 
-	basePath := DefaultBasePath
+	basePath := PublicAPIPath
 	if customBasePath != "" {
 		basePath = customBasePath
 	}
