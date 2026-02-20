@@ -20,6 +20,7 @@ type HealthData struct {
 
 // Check performs a health check.
 func (s *HealthService) Check() (*BaseResponse, error) {
+	const operation = "health.check"
 
 	url := fmt.Sprintf("%s/ping", s.base.BasePath)
 
@@ -27,29 +28,33 @@ func (s *HealthService) Check() (*BaseResponse, error) {
 
 	req, err := http.NewRequest(http.MethodPost, url, nil)
 	if err != nil {
-		return nil, err
+		return nil, &RequestBuildError{Operation: operation, Err: err}
 	}
 
 	req.Header.Set("Authorization", "Bearer "+s.base.APIKey)
 
 	resp, err := s.base.Client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, &RequestExecuteError{Operation: operation, Err: err}
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, &ResponseReadError{Operation: operation, Err: err}
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("health check failed: %s", string(body))
+		return nil, &APIError{
+			Operation:  operation,
+			StatusCode: resp.StatusCode,
+			Body:       string(body),
+		}
 	}
 
 	var response BaseResponse
 	if err := json.Unmarshal(body, &response); err != nil {
-		return nil, err
+		return nil, &ResponseDecodeError{Operation: operation, Err: err}
 	}
 
 	return &response, nil
