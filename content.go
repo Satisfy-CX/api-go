@@ -50,7 +50,7 @@ func (s *ContentService) Library(ctx context.Context) (*BaseResponse, error) {
 
 	url := fmt.Sprintf("%s/content/library", s.base.BasePath)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	req, err := http.NewRequestWithContext(requestContext(ctx), http.MethodGet, url, nil)
 	if err != nil {
 		return nil, &RequestBuildError{Operation: operation, Err: err}
 	}
@@ -118,7 +118,7 @@ func (s *ContentService) Get(ctx context.Context, id string) (*BaseResponse, err
 
 	url := fmt.Sprintf("%s/content/get/%s", s.base.BasePath, url.PathEscape(id))
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	req, err := http.NewRequestWithContext(requestContext(ctx), http.MethodGet, url, nil)
 	if err != nil {
 		return nil, &RequestBuildError{Operation: operation, Err: err}
 	}
@@ -163,7 +163,7 @@ func (s *ContentService) Manage(ctx context.Context, request ContentManageReques
 		return nil, &RequestEncodeError{Operation: operation, Err: err}
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, url, bytes.NewReader(jsonBody))
+	req, err := http.NewRequestWithContext(requestContext(ctx), http.MethodPatch, url, bytes.NewReader(jsonBody))
 	if err != nil {
 		return nil, &RequestBuildError{Operation: operation, Err: err}
 	}

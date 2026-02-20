@@ -1,6 +1,7 @@
 package scxapi
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -19,14 +20,14 @@ type HealthData struct {
 }
 
 // Check performs a health check.
-func (s *HealthService) Check() (*BaseResponse, error) {
+func (s *HealthService) Check(ctx context.Context) (*BaseResponse, error) {
 	const operation = "health.check"
 
 	url := fmt.Sprintf("%s/ping", s.base.BasePath)
 
 	log.Printf("Checking health on %s", url)
 
-	req, err := http.NewRequest(http.MethodPost, url, nil)
+	req, err := http.NewRequestWithContext(requestContext(ctx), http.MethodPost, url, nil)
 	if err != nil {
 		return nil, &RequestBuildError{Operation: operation, Err: err}
 	}
