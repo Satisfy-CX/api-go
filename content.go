@@ -46,33 +46,39 @@ type Content struct {
 
 // Library returns content for the organization (GET /content).
 func (s *ContentService) Library(ctx context.Context) (*BaseResponse, error) {
+	const operation = "content.library"
+
 	url := fmt.Sprintf("%s/content/library", s.base.BasePath)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	req, err := http.NewRequestWithContext(requestContext(ctx), http.MethodGet, url, nil)
 	if err != nil {
-		return nil, err
+		return nil, &RequestBuildError{Operation: operation, Err: err}
 	}
 
 	req.Header.Set("Authorization", "Bearer "+s.base.APIKey)
 
 	resp, err := s.base.Client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, &RequestExecuteError{Operation: operation, Err: err}
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, &ResponseReadError{Operation: operation, Err: err}
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("content list failed: %s", string(body))
+		return nil, &APIError{
+			Operation:  operation,
+			StatusCode: resp.StatusCode,
+			Body:       string(body),
+		}
 	}
 
 	var response BaseResponse
 	if err := json.Unmarshal(body, &response); err != nil {
-		return nil, err
+		return nil, &ResponseDecodeError{Operation: operation, Err: err}
 	}
 
 	return &response, nil
@@ -108,32 +114,38 @@ type ContentManageResponse struct {
 
 // Get fetches a single content item by ID (GET /content/{id}).
 func (s *ContentService) Get(ctx context.Context, id string) (*BaseResponse, error) {
+	const operation = "content.get"
+
 	url := fmt.Sprintf("%s/content/get/%s", s.base.BasePath, url.PathEscape(id))
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	req, err := http.NewRequestWithContext(requestContext(ctx), http.MethodGet, url, nil)
 	if err != nil {
-		return nil, err
+		return nil, &RequestBuildError{Operation: operation, Err: err}
 	}
 
 	req.Header.Set("Authorization", "Bearer "+s.base.APIKey)
 
 	resp, err := s.base.Client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, &RequestExecuteError{Operation: operation, Err: err}
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, &ResponseReadError{Operation: operation, Err: err}
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("content get failed: %s", string(body))
+		return nil, &APIError{
+			Operation:  operation,
+			StatusCode: resp.StatusCode,
+			Body:       string(body),
+		}
 	}
 
 	var response BaseResponse
 	if err := json.Unmarshal(body, &response); err != nil {
-		return nil, err
+		return nil, &ResponseDecodeError{Operation: operation, Err: err}
 	}
 
 	return &response, nil
@@ -142,37 +154,43 @@ func (s *ContentService) Get(ctx context.Context, id string) (*BaseResponse, err
 
 // Manage is used to manage the Content library. It creates or updates a content item.
 func (s *ContentService) Manage(ctx context.Context, request ContentManageRequest) (*ContentManageResponse, error) {
+	const operation = "content.manage"
+
 	url := fmt.Sprintf("%s/content/%s", s.base.BasePath, url.PathEscape(request.ID))
 
 	jsonBody, err := json.Marshal(request)
 	if err != nil {
-		return nil, err
+		return nil, &RequestEncodeError{Operation: operation, Err: err}
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, url, bytes.NewReader(jsonBody))
+	req, err := http.NewRequestWithContext(requestContext(ctx), http.MethodPatch, url, bytes.NewReader(jsonBody))
 	if err != nil {
-		return nil, err
+		return nil, &RequestBuildError{Operation: operation, Err: err}
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+s.base.APIKey)
 
 	resp, err := s.base.Client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, &RequestExecuteError{Operation: operation, Err: err}
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, &ResponseReadError{Operation: operation, Err: err}
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("content manage failed: %s", string(body))
+		return nil, &APIError{
+			Operation:  operation,
+			StatusCode: resp.StatusCode,
+			Body:       string(body),
+		}
 	}
 
 	var out ContentManageResponse
 	if err := json.Unmarshal(body, &out); err != nil {
-		return nil, err
+		return nil, &ResponseDecodeError{Operation: operation, Err: err}
 	}
 	return &out, nil
 }

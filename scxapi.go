@@ -1,6 +1,7 @@
 package scxapi
 
 import (
+	"context"
 	"net/http"
 	"time"
 )
@@ -31,6 +32,13 @@ func (s *SCXService) Health() *HealthService { return s.health }
 func (s *SCXService) Content() *ContentService { return s.content }
 
 const PublicAPIPath = "https://api.satisfycx.ai/v1"
+
+func requestContext(ctx context.Context) context.Context {
+	if ctx == nil {
+		return context.Background()
+	}
+	return ctx
+}
 
 // NewSCXService builds an SCXService.
 func NewSCXService(apiKey string, customBasePath string) *SCXService {
