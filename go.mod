@@ -1,3 +1,3 @@
 module github.com/Satisfy-CX/api-go
 
-go 1.22
+go 1.25
